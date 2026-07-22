@@ -45,5 +45,15 @@ int main(void) {
     printf("%s: KES %.2f\n", farmerNames[i], payments[i]);
   }
 
+  // Question 3: Calculate total pay //
+
+  double totalPayment = 0;
+
+  for (i = 0; i < SIZE; i++) {
+    totalPayment = totalPayment + payments[i];
+  }
+
+  printf("\nTotal amount payable: KES %.2f\n", totalPayment);
+
   return 0;
 }
