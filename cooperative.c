@@ -20,5 +20,19 @@ int main(void) {
   char paymentStatus[SIZE][10] = {"Pending", "Paid", "Pending",
                                   "Pending", "Paid", "Pending"};
 
+  /* Question 1: Display Farmer Records */
+
+  int i;
+
+  for (i = 0; i < SIZE; i++) {
+    printf("Farmer Number : %d\n", farmerNumbers[i]);
+    printf("Farmer Name   : %s\n", farmerNames[i]);
+    printf("Produce Type  : %s\n", produceTypes[i]);
+    printf("Quantity      : %d\n", quantities[i]);
+    printf("Price Per Unit: %.2f\n", pricesPerUnit[i]);
+    printf("Payment Status: %s\n", paymentStatus[i]);
+    printf("\n");
+  }
+
   return 0;
 }
