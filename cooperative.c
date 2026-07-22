@@ -55,5 +55,19 @@ int main(void) {
 
   printf("\nTotal amount payable: KES %.2f\n", totalPayment);
 
+  // Question 4: Identify Pending Payments //
+
+  printf("\n--- Pending Payments ---\n");
+
+  for (i = 0; i < SIZE; i++) {
+    if (strcmp(paymentStatus[i], "Pending") == 0) {
+      printf("Farmer Number : %d\n", farmerNumbers[i]);
+      printf("Farmer Name   : %s\n", farmerNames[i]);
+      printf("Amount Payable: KES %.2f\n", payments[i]);
+      printf("Payment Status: %s\n", paymentStatus[i]);
+      printf("\n");
+    }
+  }
+
   return 0;
 }
