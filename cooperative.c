@@ -20,7 +20,7 @@ int main(void) {
   char paymentStatus[SIZE][10] = {"Pending", "Paid", "Pending",
                                   "Pending", "Paid", "Pending"};
 
-  /* Question 1: Display Farmer Records */
+  // Question 1: Display Farmer Records //
 
   int i;
 
