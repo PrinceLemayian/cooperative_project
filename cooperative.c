@@ -34,5 +34,16 @@ int main(void) {
     printf("\n");
   }
 
+  // Question 2: Calculate Farmer Payments //
+
+  double payments[SIZE];
+
+  printf("\n Farmer Payments \n");
+
+  for (i = 0; i < SIZE; i++) {
+    payments[i] = quantities[i] * pricesPerUnit[i];
+    printf("%s: KES %.2f\n", farmerNames[i], payments[i]);
+  }
+
   return 0;
 }
