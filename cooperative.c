@@ -161,6 +161,24 @@ int main(void) {
   for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
     printf("%s: %d\n", produceCategories[categoryIndex], produceCounts[categoryIndex]);
   }
+
+  // Question 10: Calculate Payments by Produce Type //
+
+  double producePayments[5] = {0, 0, 0, 0, 0};
+
+  for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
+    for (i = 0; i < SIZE; i++) {
+      if (strcmp(produceTypes[i], produceCategories[categoryIndex]) == 0) {
+        producePayments[categoryIndex] += payments[i];
+      }
+    }
+  }
+
+  printf("\n Payments by Produce Type \n");
+
+  for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
+    printf("%s: KES %.2f\n", produceCategories[categoryIndex], producePayments[categoryIndex]);
+  }
   
   // Connecting to the MySQL database //
 
@@ -271,33 +289,33 @@ const char *pendingQuery =
   // Empty buffer big enough to hold finished SQL text
   char searchQuery[200];
 
-// Build the query text using the number the user typed in
-sprintf(searchQuery,
-        "SELECT FarmerNumber, FarmerName, ProduceType, Quantity "
-        "FROM ProduceDeliveries WHERE FarmerNumber = %d",
-        searchNumber);
+  // Build the query text using the number the user typed in
+  sprintf(searchQuery,
+          "SELECT FarmerNumber, FarmerName, ProduceType, Quantity "
+          "FROM ProduceDeliveries WHERE FarmerNumber = %d",
+          searchNumber);
 
-if (mysql_query(conn, searchQuery)) {
-  printf("Query failed: %s\n", mysql_error(conn));
-  mysql_close(conn);
-  return 1;
-}
+  if (mysql_query(conn, searchQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
 
-MYSQL_RES *searchResult = mysql_store_result(conn);
-MYSQL_ROW searchRow = mysql_fetch_row(searchResult);
+  MYSQL_RES *searchResult = mysql_store_result(conn);
+  MYSQL_ROW searchRow = mysql_fetch_row(searchResult);
 
-printf("\n Farmer Search (from database) \n");
+  printf("\n Farmer Search (from database) \n");
 
-if (searchRow != NULL) { 
-  printf("Farmer Number : %s\n", searchRow[0]);
-  printf("Farmer Name   : %s\n", searchRow[1]);
-  printf("Produce Type  : %s\n", searchRow[2]);
-  printf("Quantity      : %s\n", searchRow[3]);
-} else {
-  printf("Farmer not found.\n");
-}
+  if (searchRow != NULL) { 
+    printf("Farmer Number : %s\n", searchRow[0]);
+    printf("Farmer Name   : %s\n", searchRow[1]);
+    printf("Produce Type  : %s\n", searchRow[2]);
+    printf("Quantity      : %s\n", searchRow[3]);
+  } else {
+    printf("Farmer not found.\n");
+  }
 
-mysql_free_result(searchResult);
+  mysql_free_result(searchResult);
 
   mysql_close(conn);
   return 0;
