@@ -61,7 +61,7 @@ int main(void) {
 
   // Question 4: Identify Pending Payments //
 
-  printf("\n--- Pending Payments ---\n");
+  printf("\n Pending Payments \n");
 
   for (i = 0; i < SIZE; i++) {
     if (strcmp(paymentStatus[i], "Pending") == 0) {
@@ -98,9 +98,23 @@ int main(void) {
     }
 
     printf("\n Highest Delivery \n");
-    printf("Farmer Name: %s\n", farmerNames[highest]);
-    printf("Produce Type: %s\n", produceTypes[highest]);
-    printf("Quantity: %d\n", quantities[highest]);
+    printf("Farmer Name: %s\n", farmerNames[highestPosition]);
+    printf("Produce Type: %s\n", produceTypes[highestPosition]);
+    printf("Quantity: %d\n", quantities[highestPosition]);
+
+    // Question 7: Find the Lowest Payment //
+
+  int lowestIndex = 0;
+
+  for (i = 1; i < SIZE; i++) {
+    if (payments[i] < payments[lowestIndex]) {
+      lowestIndex = i;
+    }
+  }
+
+  printf("\n Lowest Payment \n");
+  printf("Farmer Name   : %s\n", farmerNames[lowestIndex]);
+  printf("Amount Payable: KES %.2f\n", payments[lowestIndex]);
 
   // Connecting to the MySQL database //
 
@@ -135,7 +149,7 @@ const char *pendingQuery =
   MYSQL_RES *result = mysql_store_result(conn);
   MYSQL_ROW row;
 
-  printf("\n--- Pending Payments (from database) ---\n");
+  printf("\n Pending Payments (from database) \n");
 
   while ((row = mysql_fetch_row(result)) != NULL) {
     double amountPayable = atof(row[2]) * atof(row[3]);
@@ -178,12 +192,33 @@ const char *pendingQuery =
   MYSQL_RES *highestResult = mysql_store_result(conn);
   MYSQL_ROW highestRow = mysql_fetch_row(highestResult);
 
-  printf("\n--- Highest Delivery (from database) ---\n");
+  printf("\n Highest Delivery (from database) \n");
   printf("Farmer Name : %s\n", highestRow[0]);
   printf("Produce Type: %s\n", highestRow[1]);
   printf("Quantity    : %s\n", highestRow[2]);
 
   mysql_free_result(highestResult);
+
+  // Question 7: Find the Lowest Payment (SQL) //
+
+  const char *lowestQuery =
+      "SELECT FarmerName, (Quantity * PricePerUnit) AS AmountPayable "
+      "FROM ProduceDeliveries ORDER BY AmountPayable ASC LIMIT 1";
+
+  if (mysql_query(conn, lowestQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  MYSQL_RES *lowestResult = mysql_store_result(conn);
+  MYSQL_ROW lowestRow = mysql_fetch_row(lowestResult);
+
+  printf("\n--- Lowest Payment (from database) ---\n");
+  printf("Farmer Name   : %s\n", lowestRow[0]);
+  printf("Amount Payable: KES %s\n", lowestRow[1]);
+
+  mysql_free_result(lowestResult);
 
   mysql_close(conn);
   return 0;
