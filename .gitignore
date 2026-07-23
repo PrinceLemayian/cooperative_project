@@ -1,0 +1,9 @@
+*.exe
+*.o
+*.obj
+db_config.h
+libmysql.dll
+.vscode/
+compile_flags.txt
+Thumbs.db
+.DS_Store

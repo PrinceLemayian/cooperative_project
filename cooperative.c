@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <winsock2.h>
+#include <mysql.h>
+#include "db_config.h"
 
 #define SIZE 6
 
 int main(void) {
+  printf("Program started\n");
   int farmerNumbers[SIZE] = {101, 102, 103, 104, 105, 106};
 
   char farmerNames[SIZE][50] = {"Mwangi Kamau",   "Wanjiku Njeri",
@@ -67,6 +71,26 @@ int main(void) {
       printf("Payment Status: %s\n", paymentStatus[i]);
       printf("\n");
     }
+  }
+
+  // Connecting to the MySQL database //
+
+  MYSQL *conn;
+
+  conn = mysql_init(NULL);
+
+  if (conn == NULL) {
+    printf("mysql_init() failed\n");
+    return 1;
+  }
+
+  conn = mysql_real_connect(conn, DB_HOST, DB_USER, DB_PASS, DB_NAME, 0, NULL, 0);
+
+  if (conn == NULL) {
+    printf("Connection failed!\n");
+    return 1;
+  } else {
+    printf("Connected to the database successfully!\n");
   }
 
   return 0;
