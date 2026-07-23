@@ -211,7 +211,29 @@ int main(void) {
     printf("%s: Gross KES %.2f, Levy KES %.2f, Net KES %.2f\n",
            farmerNames[i], payments[i], levies[i], netPayments[i]);
   }
-  
+
+  // Question 14: Identify Invalid Records //
+
+  printf("\n Invalid Records \n");
+
+  int foundInvalid = 0;
+
+  for (i = 0; i < SIZE; i++) {
+    if (quantities[i] <= 0 || pricesPerUnit[i] <= 0 || farmerNumbers[i] <= 0) {
+      printf("Farmer Number : %d\n", farmerNumbers[i]);
+      printf("Farmer Name   : %s\n", farmerNames[i]);
+      printf("Quantity      : %d\n", quantities[i]);
+      printf("Price Per Unit: %.2f\n", pricesPerUnit[i]);
+      printf("Reason        : Invalid record\n");
+      printf("\n");
+      foundInvalid = 1;
+    }
+  }
+
+  if (foundInvalid == 0) {
+    printf("No invalid records found.\n");
+  }
+
   // Connecting to the MySQL database //
 
   MYSQL *conn;
@@ -372,6 +394,65 @@ const char *pendingQuery =
   }
 
   mysql_free_result(largeResult);
+
+  // Question 14: Identify Invalid Records (SQL) //
+
+  const char *invalidQuery =
+      "SELECT FarmerNumber, FarmerName, Quantity, PricePerUnit "
+      "FROM ProduceDeliveries "
+      "WHERE Quantity <= 0 OR PricePerUnit <= 0 OR FarmerNumber <= 0";
+
+  if (mysql_query(conn, invalidQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  MYSQL_RES *invalidResult = mysql_store_result(conn);
+  MYSQL_ROW invalidRow;
+
+  printf("\n Invalid Records (from database) \n");
+
+  int foundInvalidDb = 0;
+
+  while ((invalidRow = mysql_fetch_row(invalidResult)) != NULL) {
+    printf("Farmer Number : %s\n", invalidRow[0]);
+    printf("Farmer Name   : %s\n", invalidRow[1]);
+    printf("Quantity      : %s\n", invalidRow[2]);
+    printf("Price Per Unit: %s\n", invalidRow[3]);
+    printf("\n");
+    foundInvalidDb = 1;
+  }
+
+  if (foundInvalidDb == 0) {
+    printf("No invalid records found.\n");
+  }
+
+  mysql_free_result(invalidResult);
+
+ // Question 14: Remove Invalid Records (SQL) //
+
+  if (foundInvalidDb == 1) {
+    char confirm;
+    printf("Delete all invalid records shown above? (Y/N): ");
+    scanf(" %c", &confirm);
+
+    if (confirm == 'Y' || confirm == 'y') {
+      const char *deleteQuery =
+          "DELETE FROM ProduceDeliveries "
+          "WHERE Quantity <= 0 OR PricePerUnit <= 0 OR FarmerNumber <= 0";
+
+      if (mysql_query(conn, deleteQuery)) {
+        printf("Delete failed: %s\n", mysql_error(conn));
+        mysql_close(conn);
+        return 1;
+      }
+
+      printf("\nInvalid records removed: %llu\n", (unsigned long long)mysql_affected_rows(conn));
+    } else {
+      printf("Deletion cancelled.\n");
+    }
+  }
 
   mysql_close(conn);
   return 0;
