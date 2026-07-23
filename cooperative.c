@@ -116,6 +116,31 @@ int main(void) {
   printf("Farmer Name   : %s\n", farmerNames[lowestIndex]);
   printf("Amount Payable: KES %.2f\n", payments[lowestIndex]);
 
+  // Question 8: Search for a Farmer //
+
+  int searchNumber;
+  int foundIndex = -1;
+
+  printf("\nEnter farmer number to search: ");
+  scanf("%d", &searchNumber);
+
+  for (i = 0; i < SIZE; i++) {
+    if (farmerNumbers[i] == searchNumber) {
+      foundIndex = i;
+    }
+  }
+
+  printf("\n Farmer Search \n");
+
+  if (foundIndex != -1) {
+    printf("Farmer Number : %d\n", farmerNumbers[foundIndex]);
+    printf("Farmer Name   : %s\n", farmerNames[foundIndex]);
+    printf("Produce Type  : %s\n", produceTypes[foundIndex]);
+    printf("Quantity      : %d\n", quantities[foundIndex]);
+  } else {
+    printf("Farmer not found.\n");
+  }
+  
   // Connecting to the MySQL database //
 
   MYSQL *conn;
@@ -214,11 +239,44 @@ const char *pendingQuery =
   MYSQL_RES *lowestResult = mysql_store_result(conn);
   MYSQL_ROW lowestRow = mysql_fetch_row(lowestResult);
 
-  printf("\n--- Lowest Payment (from database) ---\n");
+  printf("\n Lowest Payment (from database) \n");
   printf("Farmer Name   : %s\n", lowestRow[0]);
   printf("Amount Payable: KES %s\n", lowestRow[1]);
 
   mysql_free_result(lowestResult);
+
+  // Question 8: Search for a Farmer (SQL) //
+
+  // Empty buffer big enough to hold finished SQL text
+  char searchQuery[200];
+
+// Build the query text using the number the user typed in
+sprintf(searchQuery,
+        "SELECT FarmerNumber, FarmerName, ProduceType, Quantity "
+        "FROM ProduceDeliveries WHERE FarmerNumber = %d",
+        searchNumber);
+
+if (mysql_query(conn, searchQuery)) {
+  printf("Query failed: %s\n", mysql_error(conn));
+  mysql_close(conn);
+  return 1;
+}
+
+MYSQL_RES *searchResult = mysql_store_result(conn);
+MYSQL_ROW searchRow = mysql_fetch_row(searchResult);
+
+printf("\n Farmer Search (from database) \n");
+
+if (searchRow != NULL) { 
+  printf("Farmer Number : %s\n", searchRow[0]);
+  printf("Farmer Name   : %s\n", searchRow[1]);
+  printf("Produce Type  : %s\n", searchRow[2]);
+  printf("Quantity      : %s\n", searchRow[3]);
+} else {
+  printf("Farmer not found.\n");
+}
+
+mysql_free_result(searchResult);
 
   mysql_close(conn);
   return 0;
