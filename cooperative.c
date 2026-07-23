@@ -179,6 +179,24 @@ int main(void) {
   for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
     printf("%s: KES %.2f\n", produceCategories[categoryIndex], producePayments[categoryIndex]);
   }
+
+  // Question 11: Identify Large Deliveries //
+
+  int largeDeliveryFarmers[SIZE];
+  int largeDeliveryCount = 0;
+
+  for (i = 0; i < SIZE; i++) {
+    if (quantities[i] > 200) {
+      largeDeliveryFarmers[largeDeliveryCount] = farmerNumbers[i];
+      largeDeliveryCount++;
+    }
+  }
+
+  printf("\n Large Deliveries (over 200 units) \n");
+
+  for (i = 0; i < largeDeliveryCount; i++) {
+    printf("Farmer Number: %d\n", largeDeliveryFarmers[i]);
+  }
   
   // Connecting to the MySQL database //
 
@@ -316,6 +334,30 @@ const char *pendingQuery =
   }
 
   mysql_free_result(searchResult);
+
+// Question 11: Large Deliveries (SQL) //
+
+  const char *largeDeliveryQuery =
+      "SELECT FarmerNumber, FarmerName, Quantity FROM ProduceDeliveries "
+      "WHERE Quantity > 200";
+
+  if (mysql_query(conn, largeDeliveryQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  MYSQL_RES *largeResult = mysql_store_result(conn);
+  MYSQL_ROW largeRow;
+
+  printf("\n Large Deliveries (from database) \n");
+
+  while ((largeRow = mysql_fetch_row(largeResult)) != NULL) {
+    printf("Farmer Number: %s, Farmer Name: %s, Quantity: %s\n",
+           largeRow[0], largeRow[1], largeRow[2]);
+  }
+
+  mysql_free_result(largeResult);
 
   mysql_close(conn);
   return 0;
