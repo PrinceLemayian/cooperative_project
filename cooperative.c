@@ -234,6 +234,53 @@ int main(void) {
     printf("No invalid records found.\n");
   }
 
+// Question 15: Generate Daily Summary //
+
+  int totalFarmers = SIZE;
+  int totalQuantity = 0;
+  double totalGrossPayment = 0;
+  double totalLevy = 0;
+  double totalNetPayment = 0;
+  int paidCount = 0;
+  int pendingCount = 0;
+
+  int highestDeliveryIndex = 0;
+  int highestPaymentIndex = 0;
+
+  for (i = 0; i < SIZE; i++) {
+    totalQuantity += quantities[i];
+    totalGrossPayment += payments[i];
+    totalLevy += levies[i];
+    totalNetPayment += netPayments[i];
+
+    if (strcmp(paymentStatus[i], "Paid") == 0) {
+      paidCount++;
+    } else {
+      pendingCount++;
+    }
+
+    if (quantities[i] > quantities[highestDeliveryIndex]) {
+      highestDeliveryIndex = i;
+    }
+
+    if (payments[i] > payments[highestPaymentIndex]) {
+      highestPaymentIndex = i;
+    }
+  }
+
+  printf("\n Daily Cooperative Summary \n");
+  printf("Total Farmers Delivered   : %d\n", totalFarmers);
+  printf("Total Quantity Delivered  : %d\n", totalQuantity);
+  printf("Total Gross Payment       : KES %.2f\n", totalGrossPayment);
+  printf("Total Cooperative Levy    : KES %.2f\n", totalLevy);
+  printf("Total Net Payment         : KES %.2f\n", totalNetPayment);
+  printf("Farmers Paid              : %d\n", paidCount);
+  printf("Farmers Awaiting Payment  : %d\n", pendingCount);
+  printf("Highest Delivery          : %s (%d units)\n",
+         farmerNames[highestDeliveryIndex], quantities[highestDeliveryIndex]);
+  printf("Highest Payment           : %s (KES %.2f)\n",
+         farmerNames[highestPaymentIndex], payments[highestPaymentIndex]);
+
   // Connecting to the MySQL database //
 
   MYSQL *conn;
