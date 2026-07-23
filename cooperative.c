@@ -140,6 +140,27 @@ int main(void) {
   } else {
     printf("Farmer not found.\n");
   }
+
+  // Question 9: Counting Produce Categories //
+
+  char produceCategories[5][20] = {"Milk", "Coffee", "Maize", "Potatoes", "Vegetables"};
+  int produceCounts[5] = {0, 0, 0, 0, 0};
+
+  int categoryIndex;
+
+  for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
+    for (i = 0; i < SIZE; i++) {
+      if (strcmp(produceTypes[i], produceCategories[categoryIndex]) == 0) {
+        produceCounts[categoryIndex]++;
+      }
+    }
+  }
+
+  printf("\n Produce Category Counts \n");
+
+  for (categoryIndex = 0; categoryIndex < 5; categoryIndex++) {
+    printf("%s: %d\n", produceCategories[categoryIndex], produceCounts[categoryIndex]);
+  }
   
   // Connecting to the MySQL database //
 
