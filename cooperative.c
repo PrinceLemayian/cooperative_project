@@ -73,6 +73,35 @@ int main(void) {
     }
   }
 
+      // Question 5: Update Payment Status //
+
+    for (i = 0; i< SIZE; i++) {
+      if (payments[i] < 10000 && strcmp(paymentStatus[i], "Pending") == 0) {
+        strcpy(paymentStatus[i], "Paid");
+      }
+    }
+
+    printf("\n Updated Payment Statuses \n");
+
+    for (i = 0; i < SIZE; i++) {
+      printf("%s: %s\n", farmerNames[i], paymentStatus[i]);
+    }
+
+    // Question 6: Finding the highest delivery //
+
+  int highestPosition = 0;
+
+    for (i = 1; i < SIZE; i++) {
+        if (quantities[i] > quantities[highestPosition]) {
+            highestPosition = i;
+        }
+    }
+
+    printf("\n Highest Delivery \n");
+    printf("Farmer Name: %s\n", farmerNames[highest]);
+    printf("Produce Type: %s\n", produceTypes[highest]);
+    printf("Quantity: %d\n", quantities[highest]);
+
   // Connecting to the MySQL database //
 
   MYSQL *conn;
@@ -118,27 +147,13 @@ const char *pendingQuery =
   }
 
   mysql_free_result(result);
-  mysql_close(conn);
 
-    // Question 5: Update Payment Status //
-
-    for (i = 0; i< SIZE; i++) {
-      if (payments[i] < 10000 && strcmp(paymentStatus[i], "Pending") == 0) {
-        strcpy(paymentStatus[i], "Paid");
-      }
-    }
-
-    printf("\n Updated Payment Statuses \n");
-
-    for (i = 0; i < SIZE; i++) {
-      printf("%s: %s\n", farmerNames[i], paymentStatus[i]);
-    }
 
     // Question 5: Update Payment Status (SQL) //
 
   const char *updateQuery =
       "UPDATE ProduceDeliveries SET PaymentStatus = 'Paid' "
-      "WHERE (Quantity * PricePerUnit) < 10000";
+      "WHERE (Quantity * PricePerUnit) < 10000 AND PaymentStatus = 'Pending' ";
 
   if (mysql_query(conn, updateQuery)) {
     printf("Update failed: %s\n", mysql_error(conn));
@@ -148,5 +163,28 @@ const char *pendingQuery =
 
   printf("\nRows updated: %llu\n", (unsigned long long)mysql_affected_rows(conn));
 
+// Question 6: Find the Highest Delivery (SQL) //
+
+  const char *highestQuery =
+      "SELECT FarmerName, ProduceType, Quantity FROM ProduceDeliveries "
+      "ORDER BY Quantity DESC LIMIT 1";
+
+  if (mysql_query(conn, highestQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  MYSQL_RES *highestResult = mysql_store_result(conn);
+  MYSQL_ROW highestRow = mysql_fetch_row(highestResult);
+
+  printf("\n--- Highest Delivery (from database) ---\n");
+  printf("Farmer Name : %s\n", highestRow[0]);
+  printf("Produce Type: %s\n", highestRow[1]);
+  printf("Quantity    : %s\n", highestRow[2]);
+
+  mysql_free_result(highestResult);
+
+  mysql_close(conn);
   return 0;
 }
