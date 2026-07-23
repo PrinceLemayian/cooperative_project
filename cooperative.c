@@ -7,7 +7,6 @@
 #define SIZE 6
 
 int main(void) {
-  printf("Program started\n");
   int farmerNumbers[SIZE] = {101, 102, 103, 104, 105, 106};
 
   char farmerNames[SIZE][50] = {"Mwangi Kamau",   "Wanjiku Njeri",
@@ -92,6 +91,33 @@ int main(void) {
   } else {
     printf("Connected to the database successfully!\n");
   }
+
+const char *pendingQuery =
+      "SELECT FarmerNumber, FarmerName, Quantity, PricePerUnit, PaymentStatus "
+      "FROM ProduceDeliveries WHERE PaymentStatus = 'Pending'";
+
+  if (mysql_query(conn, pendingQuery)) {
+    printf("Query failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  MYSQL_RES *result = mysql_store_result(conn);
+  MYSQL_ROW row;
+
+  printf("\n--- Pending Payments (from database) ---\n");
+
+  while ((row = mysql_fetch_row(result)) != NULL) {
+    double amountPayable = atof(row[2]) * atof(row[3]);
+    printf("Farmer Number : %s\n", row[0]);
+    printf("Farmer Name   : %s\n", row[1]);
+    printf("Amount Payable: KES %.2f\n", amountPayable);
+    printf("Payment Status: %s\n", row[4]);
+    printf("\n");
+  }
+
+  mysql_free_result(result);
+  mysql_close(conn);
 
   return 0;
 }
