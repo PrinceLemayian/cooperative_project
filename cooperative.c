@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <winsock2.h>
 #include <mysql.h>
 #include "db_config.h"
@@ -118,6 +119,34 @@ const char *pendingQuery =
 
   mysql_free_result(result);
   mysql_close(conn);
+
+    // Question 5: Update Payment Status //
+
+    for (i = 0; i< SIZE; i++) {
+      if (payments[i] < 10000 && strcmp(paymentStatus[i], "Pending") == 0) {
+        strcpy(paymentStatus[i], "Paid");
+      }
+    }
+
+    printf("\n Updated Payment Statuses \n");
+
+    for (i = 0; i < SIZE; i++) {
+      printf("%s: %s\n", farmerNames[i], paymentStatus[i]);
+    }
+
+    // Question 5: Update Payment Status (SQL) //
+
+  const char *updateQuery =
+      "UPDATE ProduceDeliveries SET PaymentStatus = 'Paid' "
+      "WHERE (Quantity * PricePerUnit) < 10000";
+
+  if (mysql_query(conn, updateQuery)) {
+    printf("Update failed: %s\n", mysql_error(conn));
+    mysql_close(conn);
+    return 1;
+  }
+
+  printf("\nRows updated: %llu\n", (unsigned long long)mysql_affected_rows(conn));
 
   return 0;
 }
