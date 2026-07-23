@@ -197,6 +197,20 @@ int main(void) {
   for (i = 0; i < largeDeliveryCount; i++) {
     printf("Farmer Number: %d\n", largeDeliveryFarmers[i]);
   }
+
+  // Question 12: Apply Cooperative Levy //
+
+  double levies[SIZE];
+  double netPayments[SIZE];
+
+  printf("\n Net Payments After Levy \n");
+
+  for (i = 0; i < SIZE; i++) {
+    levies[i] = payments[i] * 0.02;
+    netPayments[i] = payments[i] - levies[i];
+    printf("%s: Gross KES %.2f, Levy KES %.2f, Net KES %.2f\n",
+           farmerNames[i], payments[i], levies[i], netPayments[i]);
+  }
   
   // Connecting to the MySQL database //
 
